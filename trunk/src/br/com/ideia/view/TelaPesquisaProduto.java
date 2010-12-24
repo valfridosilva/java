@@ -159,8 +159,8 @@ public class TelaPesquisaProduto extends JFrame {
 		linha[index++] = produto.getCodigo();
 		linha[index++] = produto.getDescricao();
 		linha[index++] = produto.getValor();
-		linha[index++] = produto.getCategoria().getDescricao();
-		linha[index++] = produto.getFabricante().getDescricao();
+		linha[index++] = produto.getCategoria()==null?"":produto.getCategoria().getDescricao();
+		linha[index++] = produto.getFabricante()==null?"":produto.getFabricante().getDescricao();
 		return linha;
 	}
 	

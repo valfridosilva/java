@@ -21,7 +21,7 @@ public class Utilitaria {
 	}
 	
 	public ImageIcon getImagemJava() {
-		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png"));
+		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logoJava.png"));
 	}
 	
 	public static Date convertStringToDate(String data, String pattern) throws ParseException {

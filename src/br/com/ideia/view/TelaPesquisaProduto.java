@@ -49,6 +49,7 @@ public class TelaPesquisaProduto extends JInternalFrame {
 	private List<CategoriaVO> categorias;
 	private List<FabricanteVO> fabricantes;
 	private ProdutoBO produtoBO;
+	private String[] caracteresEspeciais = new String[]{"\\","(",")","[","^","$",".","|","?","*","+"};
 
 	public TelaPesquisaProduto(TelaMenu telaMenu, List<ProdutoVO> produtos, List<CategoriaVO> categorias, List<FabricanteVO> fabricantes) {
 		super("Pesquisa!", true, true, true, true);
@@ -58,20 +59,7 @@ public class TelaPesquisaProduto extends JInternalFrame {
 		telaMenu.desktop.add(this);
 		inputText = new JTextField(80);
 		inputText.setEditable(true);
-		inputText.addKeyListener(new KeyListener(){
-			@Override
-			public void keyPressed(KeyEvent evt) {}
-			@Override
-			public void keyReleased(KeyEvent evt) {}
-			@Override
-			public void keyTyped(KeyEvent evt) {
-				char key = evt.getKeyChar();
-				if(key == '\\'){
-					evt.consume();
-				}
-			}			
-		});
-
+		
 		this.categorias = categorias;
 		this.fabricantes = fabricantes;
 
@@ -98,13 +86,9 @@ public class TelaPesquisaProduto extends JInternalFrame {
 		 */
 		inputText.addKeyListener(new KeyListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {
-			}
-
+			public void keyTyped(KeyEvent e) {}
 			@Override
-			public void keyReleased(KeyEvent e) {
-			}
-
+			public void keyReleased(KeyEvent e) {}
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_DOWN) {
@@ -144,11 +128,9 @@ public class TelaPesquisaProduto extends JInternalFrame {
 			public void changedUpdate(DocumentEvent e) {
 				aplicaFiltro(inputText.getText());
 			}
-
 			public void insertUpdate(DocumentEvent e) {
 				aplicaFiltro(inputText.getText());
 			}
-
 			public void removeUpdate(DocumentEvent e) {
 				aplicaFiltro(inputText.getText());
 			}
@@ -163,6 +145,11 @@ public class TelaPesquisaProduto extends JInternalFrame {
 
 	private void aplicaFiltro(String nome) {
 		try {
+			for(String caract: caracteresEspeciais){
+				if(nome.contains(caract)){					
+					nome = nome.replace(caract, "\\"+caract);									
+				}		
+			}
 			filtro = RowFilter.regexFilter("(?i)" + nome);
 		} catch (PatternSyntaxException e) {
 			logger.debug(e.getMessage());

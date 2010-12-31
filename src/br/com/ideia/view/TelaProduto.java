@@ -90,8 +90,8 @@ public class TelaProduto extends JInternalFrame {
 
 		campoCodigo = new JTextField(100);
 		campoDescricao = new JTextField(100);
-		campoValor = new TextFieldMoedaReal();
-		campoValor.setColumns(10);
+		campoValor = new TextFieldMoedaReal();		
+		campoValor.setColumns(15);
 
 		campoCategoria = new JComboBox(categorias.toArray());
 		campoCategoria.setBackground(Color.WHITE);
@@ -277,13 +277,13 @@ public class TelaProduto extends JInternalFrame {
 		try {
 			montaPesquisa(campoDescricao.getText());
 		} catch (ValidacaoException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -298,8 +298,11 @@ public class TelaProduto extends JInternalFrame {
 				setObjectToTela(lista.get(0));
 				habilitaBotoes(false);
 			} else {
-				TelaListagemProduto tela = new TelaListagemProduto(lista, this);
-				tela.setLocationRelativeTo(null);
+				TelaListagemProduto tela = new TelaListagemProduto(telaMenu, lista, this);
+				tela.setBounds(telaMenu.ESPACO_ENTRE_JANELA / 2, (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), telaMenu.desktop.getWidth() - telaMenu.ESPACO_ENTRE_JANELA, telaMenu.desktop
+						.getHeight()
+						- (telaMenu.ESPACO_ENTRE_JANELA * 2));
+				telaMenu.desktop.moveToFront(tela);
 			}
 		} else {
 			throw new ValidacaoException(Mensagem.NENHUM_REGISTRO);
@@ -309,21 +312,21 @@ public class TelaProduto extends JInternalFrame {
 	private void excluir() {
 		try {
 			Object[] options = { Mensagem.SIM, Mensagem.NAO };
-			int res = JOptionPane.showOptionDialog(null, String.format(Mensagem.CONFIRMA_EXCLUSAO, produto.getDescricao()), Mensagem.CONFIRMA,
+			int res = JOptionPane.showOptionDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CONFIRMA_EXCLUSAO, produto.getDescricao()), Mensagem.CONFIRMA,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			if (res == JOptionPane.YES_OPTION) {
 				getProdutoBO().excluiProduto(produto);
 				limpar();
 				telaMenu.atualizaPesquisaProduto();
-				JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 
 	}
@@ -335,18 +338,18 @@ public class TelaProduto extends JInternalFrame {
 			getProdutoBO().insereProduto(prod);
 			limpar();
 			telaMenu.atualizaPesquisaProduto();
-			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch (ValidacaoException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (EntityExistsException e) {
-			JOptionPane.showMessageDialog(null, Mensagem.CLIENTE_DUPLICADO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.CLIENTE_DUPLICADO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
@@ -369,18 +372,18 @@ public class TelaProduto extends JInternalFrame {
 			getProdutoBO().alteraProduto(getObjectFomTela());
 			limpar();
 			telaMenu.atualizaPesquisaProduto();
-			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO,
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO,
 					JOptionPane.INFORMATION_MESSAGE);
 		} catch (ValidacaoException e) {
-			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (EntityExistsException e) {
-			JOptionPane.showMessageDialog(null, Mensagem.CLIENTE_DUPLICADO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.CLIENTE_DUPLICADO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 

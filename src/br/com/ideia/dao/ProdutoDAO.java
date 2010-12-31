@@ -8,9 +8,10 @@ import br.com.ideia.bean.ProdutoVO;
 import br.com.ideia.util.BancoDeDadosException;
 import br.com.ideia.util.FabricaConexao;
 
+@SuppressWarnings("unchecked")
 public class ProdutoDAO extends GenericDAO<ProdutoVO>{
 
-	@SuppressWarnings("unchecked")
+	
 	public List<ProdutoVO> getProdutoByNome(String descricao) throws BancoDeDadosException {
 		manager = FabricaConexao.getEntityManager();
 		StringBuilder hql = new StringBuilder();
@@ -21,6 +22,22 @@ public class ProdutoDAO extends GenericDAO<ProdutoVO>{
 		Query query = manager.createQuery(hql.toString());			
 		query.setParameter(1, descricao+"%");		
 		return (List<ProdutoVO>)query.getResultList();
+	}
+	
+	public boolean hasReferenciaCategoria(Integer idCategoria) throws BancoDeDadosException {
+		manager = FabricaConexao.getEntityManager();
+		Query query = manager.createQuery("SELECT p FROM produto p WHERE p.categoria.id = ?1");
+		query.setParameter(1, idCategoria);		
+		List<ProdutoVO> lista = (List<ProdutoVO>)query.getResultList();
+		return !lista.isEmpty();
+	}
+	
+	public boolean hasReferenciaFabricante(Integer idFabricante) throws BancoDeDadosException {
+		manager = FabricaConexao.getEntityManager();
+		Query query = manager.createQuery("SELECT p FROM produto p WHERE p.fabricante.id = ?1");
+		query.setParameter(1, idFabricante);		
+		List<ProdutoVO> lista = (List<ProdutoVO>)query.getResultList();
+		return !lista.isEmpty();
 	}
 	
 }

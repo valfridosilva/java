@@ -11,6 +11,7 @@ import br.com.ideia.dao.CategoriaDAO;
 import br.com.ideia.dao.FabricanteDAO;
 import br.com.ideia.dao.ProdutoDAO;
 import br.com.ideia.util.BancoDeDadosException;
+import br.com.ideia.util.RegistroEmUsoException;
 
 public class ProdutoBO {
 
@@ -33,7 +34,11 @@ public class ProdutoBO {
 	}
 	
 	public void excluiProduto(ProdutoVO produto) throws BancoDeDadosException {
-		produtoDAO.exclui(produto);
+		try {
+			produtoDAO.exclui(produto.getId(), ProdutoVO.class);
+		} catch (RegistroEmUsoException e) {
+			throw new BancoDeDadosException(e);
+		}
 	}
 		
 	public void insereCategoria(CategoriaVO categoria) throws BancoDeDadosException, EntityExistsException{
@@ -44,8 +49,11 @@ public class ProdutoBO {
 		categoriaDAO.altera(categoria);
 	}
 	
-	public void excluiCategoria(CategoriaVO categoria) throws BancoDeDadosException {
-		categoriaDAO.exclui(categoria);
+	public void excluiCategoria(CategoriaVO categoria) throws BancoDeDadosException, RegistroEmUsoException {
+		if(produtoDAO.hasReferenciaCategoria(categoria.getId())){
+			throw new RegistroEmUsoException();
+		}
+		categoriaDAO.exclui(categoria.getId(), CategoriaVO.class);
 	}
 		
 	public void insereFabricante(FabricanteVO fabricante) throws BancoDeDadosException, EntityExistsException{
@@ -56,8 +64,11 @@ public class ProdutoBO {
 		fabricanteDAO.altera(fabricante);
 	}
 	
-	public void excluiFabricante(FabricanteVO fabricante) throws BancoDeDadosException {
-		fabricanteDAO.exclui(fabricante);
+	public void excluiFabricante(FabricanteVO fabricante) throws BancoDeDadosException, RegistroEmUsoException {
+		if(produtoDAO.hasReferenciaFabricante(fabricante.getId())){
+			throw new RegistroEmUsoException();
+		}
+		fabricanteDAO.exclui(fabricante.getId(), FabricanteVO.class);
 	}
 	
 	public List<CategoriaVO> getCategoriaByNome(String descricao) throws BancoDeDadosException {

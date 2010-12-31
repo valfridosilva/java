@@ -1,18 +1,13 @@
 package br.com.ideia.negocio;
 
-import java.io.File;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
 
 import br.com.ideia.bean.ClienteVO;
 import br.com.ideia.dao.ClienteDAO;
-import br.com.ideia.importacao.ArquivoFlatWorm;
-import br.com.ideia.importacao.ArquivoSER;
 import br.com.ideia.util.BancoDeDadosException;
-import br.com.ideia.util.ValidacaoException;
-
-import com.blackbear.flatworm.errors.FlatwormException;
+import br.com.ideia.util.RegistroEmUsoException;
 
 public class ClienteBO {
 
@@ -31,23 +26,14 @@ public class ClienteBO {
 	}
 	
 	public void excluiCliente(ClienteVO cliente) throws BancoDeDadosException {
-		clienteDAO.exclui(cliente);
+		try {
+			clienteDAO.exclui(cliente.getIdCliente(),ClienteVO.class);
+		} catch (RegistroEmUsoException e) {
+			throw new BancoDeDadosException(e);
+		}
 	}
 	
 	public List<ClienteVO> getClienteByNome(String nome) throws BancoDeDadosException{
 		return clienteDAO.getClienteByNome(nome);
-	}
-	
-	public void importarCliente(File arquivoSelecionado) throws ValidacaoException, FlatwormException, EntityExistsException, BancoDeDadosException{
-		ArquivoFlatWorm arquivoFlatWorm = new ArquivoSER();
-		arquivoFlatWorm.validaImport(arquivoSelecionado);
-		List<ClienteVO> clientes = arquivoFlatWorm.importFile(arquivoSelecionado, ClienteVO.class);
-		clienteDAO.insere(clientes);
-	}
-	
-	public void exportarCliente(String pathFile) throws BancoDeDadosException, FlatwormException, ValidacaoException{
-		ArquivoFlatWorm arquivoFlatWorm = new ArquivoSER();		
-		List<ClienteVO> clientes = getClienteByNome("");
-		arquivoFlatWorm.exportFile(clientes, pathFile);		
-	}
+	}		
 }

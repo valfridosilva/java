@@ -3,12 +3,13 @@ package br.com.ideia.view;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,12 +22,13 @@ import br.com.ideia.negocio.ProdutoBO;
 import br.com.ideia.util.BancoDeDadosException;
 import br.com.ideia.util.Mensagem;
 import br.com.ideia.util.MyJButton;
+import br.com.ideia.util.RegistroEmUsoException;
 import br.com.ideia.util.ValidacaoException;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class TelaFabricante extends JFrame {
+public class TelaFabricante extends JInternalFrame {
 
 	private static Logger logger = Logger.getLogger(TelaFabricante.class);
 
@@ -41,24 +43,23 @@ public class TelaFabricante extends JFrame {
 	private JTextField campoDescricao;
 	private FabricanteVO fabricante;
 	private ProdutoBO produtoBO;
+	private TelaMenu telaMenu;
 	private static final String TIPO_OBJETO = "Fabricante";
 
-	public TelaFabricante() {
-		super(TIPO_OBJETO);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setLayout(new FlowLayout());
-		setLocationRelativeTo(null);
-		setResizable(false);
+	public TelaFabricante(TelaMenu telaMenu) {
+		super(TIPO_OBJETO, true, true, true, true);			
+		setLayout(new FlowLayout());		
 		setVisible(true);
 		boolean flag = true;
-
+		this.telaMenu = telaMenu;
+		telaMenu.desktop.add(this);
 		botaoPesquisar = new MyJButton(Mensagem.LABEL_PESQUISAR);
 		botaoSalvar = new MyJButton(Mensagem.LABEL_SALVAR);
 		botaoAlterar = new MyJButton(Mensagem.LABEL_ALTERAR);
 		botaoExcluir = new MyJButton(Mensagem.LABEL_EXCLUIR);
 		botaoLimpar = new MyJButton(Mensagem.LABEL_LIMPAR);
 		labelDescricao = new JLabel("* Descrição:");
-
+		labelDescricao.setToolTipText("Descrição");
 		campoDescricao = new JTextField(100);
 
 		campoDescricao.setEditable(flag);
@@ -69,17 +70,21 @@ public class TelaFabricante extends JFrame {
 
 		super.add(painel);
 
-		getContentPane().add(botaoSalvar);
-		getContentPane().add(botaoAlterar);
-		getContentPane().add(botaoExcluir);
-		getContentPane().add(botaoLimpar);
+		JPanel painelBotao = new JPanel();
+		
+		painelBotao.add(botaoSalvar);
+		painelBotao.add(botaoAlterar);
+		painelBotao.add(botaoExcluir);
+		painelBotao.add(botaoLimpar);
+		super.add(painelBotao);
+		
 		super.pack();
 
 	}
 	
 	public JPanel getpanelform() {
 
-		FormLayout formlayout = new FormLayout("2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 90px, 2dlu, pref, 2dlu, 70px, 2dlu",
+		FormLayout formlayout = new FormLayout("2dlu, pref, 2dlu, 100px, 2dlu, 50px, 2dlu, 90px, 2dlu, 50px, 2dlu, 70px, 2dlu, 70px, 2dlu, 50px, 2dlu, 40px, 2dlu",
 				"2dlu, top:pref, 2dlu, top:pref, 2dlu, top:pref, 2dlu, pref, 2dlu, pref, 8dlu, pref, 8dlu");
 		JPanel jpanel = new JPanel(formlayout);
 		jpanel.setBorder(BorderFactory.createTitledBorder("Dados "));
@@ -111,8 +116,8 @@ public class TelaFabricante extends JFrame {
 			}
 		});
 		jpanel.add(labelDescricao, cellconstraints.xy(2, 2));
-		jpanel.add(campoDescricao, cellconstraints.xyw(4, 2, 5));
-		jpanel.add(botaoPesquisar, cellconstraints.xy(10, 2));
+		jpanel.add(campoDescricao, cellconstraints.xyw(4, 2, 9));
+		jpanel.add(botaoPesquisar, cellconstraints.xyw(14, 2,3));
 
 		return jpanel;
 	}
@@ -168,6 +173,16 @@ public class TelaFabricante extends JFrame {
 		campoDescricao.setText(obj.getDescricao());
 		fabricante = obj;
 	}
+	
+	public void restaura(){
+		this.setVisible(true);
+		try {
+			this.setIcon(false);
+			this.setMaximum(false);
+		} catch (PropertyVetoException e) {
+			logger.error("erro ao restaurar a tela",e);
+		}
+	}
 
 	private void excluir() {
 		try {
@@ -180,6 +195,8 @@ public class TelaFabricante extends JFrame {
 				JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);
 			}
+		} catch (RegistroEmUsoException e) {			
+			JOptionPane.showMessageDialog(null, Mensagem.REGISTRO_EM_USO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
 			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
@@ -213,7 +230,7 @@ public class TelaFabricante extends JFrame {
 
 		if (campoDescricao.getText().trim().isEmpty()) {
 			campoDescricao.requestFocus();
-			throw new ValidacaoException(Mensagem.CAMPO_OBRIGATORIO);
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelDescricao.getToolTipText()));
 		}
 	}
 
@@ -222,6 +239,7 @@ public class TelaFabricante extends JFrame {
 			validaFabricante();
 			getProdutoBO().alteraFabricante(getObjectFomTela());
 			limpar();
+			telaMenu.atualizaPesquisaProduto();
 			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);

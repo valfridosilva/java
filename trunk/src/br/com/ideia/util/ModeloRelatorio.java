@@ -20,6 +20,10 @@ public class ModeloRelatorio extends AbstractTableModel {
 	public void add(Object[] linha) {
 		dados.add(new LinhaRelatorio(linha));
 	}
+	
+	public void clean(){
+		this.dados = new ArrayList<LinhaRelatorio>();
+	}
 
 	public int getColumnCount() {
 		return colunas.length;
@@ -34,15 +38,18 @@ public class ModeloRelatorio extends AbstractTableModel {
 	}
 
 	public Object getValueAt(int row, int col) {
-		return ((LinhaRelatorio) dados.get(row)).getCelula(col);
+		if( dados.get(row) != null){
+			return ((LinhaRelatorio) dados.get(row)).getCelula(col);
+		}			
+		return null;
+	}
+		
+	public void setValueAt(Object value, int row, int col) {
+		((LinhaRelatorio) dados.get(row)).setCelula(value, col);		
 	}
 
 	public Class<? extends Object> getColumnClass(int c) {
 		return !dados.isEmpty() ? ((LinhaRelatorio) dados.get(0)).getCelula(c).getClass() : null;
-	}
-
-	public void setValueAt(Object value, int row, int col) {
-		((LinhaRelatorio) dados.get(row)).setCelula(value, col);
 	}
 
 	public boolean isCellEditable(int row, int col) {

@@ -15,13 +15,13 @@ public class Utilitaria {
 	private static final String caminhoImagem = "imagens/";
 	public static final String PATTERN_DDMMYYYY = "dd/MM/yyyy";
 	private static SimpleDateFormat format = new SimpleDateFormat();
-	
+		
 	public ImageIcon getImagemLogo() {
 		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png"));
 	}
 	
 	public ImageIcon getImagemJava() {
-		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logoJava.png"));
+		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png"));
 	}
 	
 	public static Date convertStringToDate(String data, String pattern) throws ParseException {
@@ -41,4 +41,5 @@ public class Utilitaria {
 		format.setLenient(false);
 		return format.format(data);
 	}
+	
 }

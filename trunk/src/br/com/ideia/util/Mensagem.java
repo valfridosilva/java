@@ -18,13 +18,14 @@ public class Mensagem {
 	public static final String LABEL_EXCLUIR = "Excluir";	
 	public static final String LABEL_LIMPAR = "Limpar";	
 	public static final String LABEL_VOLTAR = "Voltar";	
+	public static final String LABEL_ATUALIZAR = "Atualizar";
 	
 	public static final String ERRO_SISTEMA = "Erro no sistema";
 	public static final String ERRO_BANCO_DADOS = "Erro no acesso ao Banco de Dados";
 	public static final String ERRO_IMPORTACAO_ARQUIVO = "Erro na imporção do Arquivo";
 	public static final String ERRO_EXPORTACAO_ARQUIVO = "Erro na exportação do Arquivo";
 	public static final String ERRO_GERACAO_RELATORIO = "Erro na Geração do Relatório";
-	public static final String CAMPO_OBRIGATORIO = "Existem campo(s) obrigatório(s) não preenchido(s)!";
+	public static final String CAMPO_OBRIGATORIO = "Campo %S é obrigatório!";
 	public static final String REGISTRO_INSERIDO = "%S inserido com sucesso!";
 	public static final String REGISTRO_ALTERADO = "%S alterado com sucesso!";
 	public static final String REGISTRO_EXCLUIDO = "%S excluído com sucesso!";
@@ -37,8 +38,8 @@ public class Mensagem {
 	public static final String ARQUIVO_EXTENSAO = "Favor selecionar um arquivo no formato %S!";
 	public static final String ARQUIVO_INEXISTENTE = "Arquivo não encontrado!";
 	public static final String ARQUIVO_ANOTACAO = "Nenhuma @FlatWorm foi encontrado na classe: %S ! ";
-	public static final String DATA_INVALIDA = "A Data %S é inválida!";
-	public static final String VALOR_INVALIDO = "O campo %S aceita apenas números!";
+	public static final String CAMPO_INVALIDO = "O valor %S é inválido para o campo %S!";	
 	public static final String CAMPO_PESQUISA = "Favor preencher o campo de pesquisa!";
+	public static final String REGISTRO_EM_USO = "Não é possível excluir o registro que está em uso!";
 			
 }

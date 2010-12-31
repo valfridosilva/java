@@ -7,9 +7,7 @@ import javax.persistence.EntityExistsException;
 
 import br.com.ideia.bean.ClienteVO;
 import br.com.ideia.bean.ProdutoVO;
-import br.com.ideia.dao.CategoriaDAO;
 import br.com.ideia.dao.ClienteDAO;
-import br.com.ideia.dao.FabricanteDAO;
 import br.com.ideia.dao.ProdutoDAO;
 import br.com.ideia.importacao.ArquivoAgregado;
 import br.com.ideia.importacao.ArquivoFlatWorm;
@@ -24,20 +22,20 @@ public class ArquivoBO {
 
 	private ClienteDAO clienteDAO;
 	private ProdutoDAO produtoDAO;
-	private CategoriaDAO categoriaDAO;
-	private FabricanteDAO fabricanteDAO;
+	//private CategoriaDAO categoriaDAO;
+	///private FabricanteDAO fabricanteDAO;
 	
 	public ArquivoBO() {
 		clienteDAO = new ClienteDAO();
 		produtoDAO = new ProdutoDAO();	
-		categoriaDAO = new CategoriaDAO();
-		fabricanteDAO = new FabricanteDAO();
+	//	categoriaDAO = new CategoriaDAO();
+		//fabricanteDAO = new FabricanteDAO();
 	}
 	
 	public void importarArquivo(File arquivoSelecionado) throws ValidacaoException, FlatwormException, EntityExistsException, BancoDeDadosException{
 		ArquivoFlatWorm arquivoFlatWorm = new ArquivoSER();
 		arquivoFlatWorm.validaImport(arquivoSelecionado);
-		ArquivoAgregado arquivo = arquivoFlatWorm.importFile(arquivoSelecionado, ArquivoAgregado.class);
+		//ArquivoAgregado arquivo = arquivoFlatWorm.importFile(arquivoSelecionado, ArquivoAgregado.class);
 		//clienteDAO.insereOuAtualiza(clientes);
 	}
 	

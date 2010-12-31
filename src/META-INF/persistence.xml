@@ -4,7 +4,7 @@
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<properties>
 			<property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver" />
-			<property name="hibernate.connection.url" value="jdbc:hsqldb:file:h://ideiaDB" />
+			<property name="hibernate.connection.url" value="jdbc:hsqldb:file:../ideiaDB" />
 			<property name="hibernate.connection.username" value="sa" />
 			<property name="hibernate.connection.password" value="" />
 			<property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect" />

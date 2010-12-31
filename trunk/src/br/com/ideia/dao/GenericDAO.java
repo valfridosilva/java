@@ -8,6 +8,7 @@ import javax.persistence.PersistenceException;
 
 import br.com.ideia.util.BancoDeDadosException;
 import br.com.ideia.util.FabricaConexao;
+import br.com.ideia.util.RegistroEmUsoException;
 
 public abstract class GenericDAO<T> {
 
@@ -32,18 +33,18 @@ public abstract class GenericDAO<T> {
 	}
 
 	protected void rollBack() {
-		if (manager != null) {
+		if (manager != null && manager.getTransaction().isActive()) {
 			manager.getTransaction().rollback();
 		}
 	}
 
-	public void insere(List<T> elements) throws BancoDeDadosException, EntityExistsException {
+	public void insereOuAtualiza(List<T> elements) throws BancoDeDadosException, EntityExistsException {
 		try {
 			manager = FabricaConexao.getEntityManager();
 			manager.getTransaction().begin();
 			int index = 0;
 			for (T element : elements) {
-				manager.persist(element);
+				manager.merge(element);
 				index++;
 				if (index % 20 == 0) { // a cada 20 registros efetua o commit
 					manager.flush();
@@ -80,19 +81,20 @@ public abstract class GenericDAO<T> {
 			throw new BancoDeDadosException(e);
 		}
 	}
-
-	public void exclui(T element) throws BancoDeDadosException {
+	
+	public void exclui(Integer id, Class<T> clazz) throws BancoDeDadosException, RegistroEmUsoException{
 		try {
 			manager = FabricaConexao.getEntityManager();
-			manager.getTransaction().begin();
-			manager.remove(element);
-			manager.getTransaction().commit();
+			manager.getTransaction().begin();				
+			manager.remove(manager.find(clazz, id));
+			manager.getTransaction().commit();			
 		} catch (PersistenceException e) {
-			rollBack();
+			rollBack();			
 			throw new BancoDeDadosException(e);
 		} catch (Exception e) {
 			rollBack();
 			throw new BancoDeDadosException(e);
 		}
-	}	
+	}
+
 }

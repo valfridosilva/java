@@ -1,7 +1,7 @@
 package br.com.ideia.view;
 
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -10,16 +10,13 @@ import java.io.File;
 import java.util.List;
 
 import javax.persistence.EntityExistsException;
-import javax.swing.Icon;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
@@ -44,15 +41,13 @@ import com.blackbear.flatworm.errors.FlatwormException;
  */
 public class TelaMenu extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JLabel painel;
-	private Icon logo;
+	private static final long serialVersionUID = 1L;	
 	private ClienteBO clienteBO;
 	private ProdutoBO produtoBO;
 	private ArquivoBO arquivoBO;
 	private List<CategoriaVO> categorias;
 	private List<FabricanteVO> fabricantes;
-	private final Integer ESPACO_ENTRE_JANELA = 120;
+	public final Integer ESPACO_ENTRE_JANELA = 120;
 	JDesktopPane desktop;
 	private TelaCliente telaCliente;
 	private TelaProduto telaProduto;
@@ -67,8 +62,8 @@ public class TelaMenu extends JFrame {
 		super("Ideia - Sistema de Cadastro de Clientes");
 		Utilitaria util = new Utilitaria();
 
-		desktop = new JDesktopPane();
-		getContentPane().add(desktop);
+		desktop = new BackgroundedDesktopPane(util.getImagemLogo());	
+		add(desktop);
 
 		JMenuBar menuBar = new JMenuBar();
 		JMenu cadastro = new JMenu("Cadastro");
@@ -90,6 +85,7 @@ public class TelaMenu extends JFrame {
 			}
 		});
 		cadastro.add(manterProduto);
+		cadastro.addSeparator();
 
 		JMenuItem manterCategoria = new JMenuItem("Categoria");
 		manterCategoria.setMnemonic('T');
@@ -136,7 +132,7 @@ public class TelaMenu extends JFrame {
 		sobre.setMnemonic('S');
 		sobre.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				JOptionPane.showMessageDialog(null, "Sistema Desenvolvido por:\nValfrido Ferreira\nVersão 1.0", "", 1, new Utilitaria()
+				JOptionPane.showMessageDialog(null, "Sistema Desenvolvido por:\nValfrido Ferreira\nVersão 1.0 - 2010", "", 1, new Utilitaria()
 						.getImagemJava());
 			}
 		});
@@ -173,14 +169,6 @@ public class TelaMenu extends JFrame {
 		menuBar.add(cadastro);
 		menuBar.add(consultar);
 
-		logo = util.getImagemLogo();
-		painel = new JLabel("Sistema de Clientes..Seja Bem Vindo!", logo, SwingConstants.CENTER);
-		painel.setVerticalTextPosition(JLabel.TOP);
-		painel.setHorizontalTextPosition(JLabel.CENTER);
-		painel.setForeground(Color.BLUE);
-		painel.setFont(new Font("Arial", Font.ITALIC, 15));
-		// add(painel, BorderLayout.CENTER);
-
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
 				sair();
@@ -190,7 +178,7 @@ public class TelaMenu extends JFrame {
 		setJMenuBar(menuBar);
 		setResizable(false);
 		setLocationRelativeTo(null);
-		setVisible(true);
+		setVisible(true);		
 
 	} // fim do construtor
 
@@ -209,21 +197,22 @@ public class TelaMenu extends JFrame {
 	protected void cadastrarProduto() {
 		try {
 			if (telaProduto == null || telaProduto.isClosed()) {
-				telaProduto = new TelaProduto(this, getCategorias(), getFabricantes());				
+				telaProduto = new TelaProduto(this, getCategorias(), getFabricantes());
 			} else {
 				telaProduto.atualiza();
 			}
 			telaProduto.restaura();
 			telaProduto.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-					.getHeight() - (ESPACO_ENTRE_JANELA * 2));
+					.getHeight()
+					- (ESPACO_ENTRE_JANELA * 2));
 			desktop.moveToFront(telaProduto);
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
 			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}		
+		}
 	}
 
 	protected void cadastrarCategoria() {
@@ -231,8 +220,9 @@ public class TelaMenu extends JFrame {
 			telaCategoria = new TelaCategoria(this);
 		}
 		telaCategoria.restaura();
-		telaCategoria.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA,
-				this.desktop.getHeight() - (ESPACO_ENTRE_JANELA * 3));
+		telaCategoria.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight()
+				- (ESPACO_ENTRE_JANELA * 3));
 
 		desktop.moveToFront(telaCategoria);
 		setCategorias(null);
@@ -244,8 +234,9 @@ public class TelaMenu extends JFrame {
 			telaFabricante = new TelaFabricante(this);
 		}
 		telaFabricante.restaura();
-		telaFabricante.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA,
-				this.desktop.getHeight() - (ESPACO_ENTRE_JANELA * 3));
+		telaFabricante.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight()
+				- (ESPACO_ENTRE_JANELA * 3));
 
 		desktop.moveToFront(telaFabricante);
 		setFabricantes(null);
@@ -270,7 +261,7 @@ public class TelaMenu extends JFrame {
 					telaPesquisaProduto.setBounds(0, 0, desktop.getWidth(), desktop.getHeight());
 					desktop.moveToFront(telaPesquisaProduto);
 				} catch (ValidacaoException e) {
-					JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 				} catch (BancoDeDadosException e) {
 					logger.error(Mensagem.ERRO_BANCO_DADOS, e);
 					JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
@@ -338,7 +329,7 @@ public class TelaMenu extends JFrame {
 		}
 		return clienteBO;
 	}
-	
+
 	public ArquivoBO getArquivoBO() {
 		if (arquivoBO == null) {
 			arquivoBO = new ArquivoBO();
@@ -349,7 +340,7 @@ public class TelaMenu extends JFrame {
 	public List<CategoriaVO> getCategorias() throws BancoDeDadosException {
 		if (categorias == null) {
 			categorias = getProdutoBO().getCategoriaByNome("");
-			categorias.add(0, null);			
+			categorias.add(0, null);
 		}
 		return categorias;
 	}
@@ -398,5 +389,24 @@ class MyFilter extends javax.swing.filechooser.FileFilter {
 
 	public String getDescription() {
 		return "*" + ArquivoSER.EXTENSION_FILE;
+	}
+}
+
+class BackgroundedDesktopPane extends JDesktopPane {
+
+	private static final long serialVersionUID = 1L;
+	private Image img;
+
+	public BackgroundedDesktopPane(Image image) {
+		img = image;
+	}
+
+	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		if (img != null){
+			g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), this);
+		}else{
+			g.drawString("Logo não encontrada", 50, 50);
+		}
 	}
 }

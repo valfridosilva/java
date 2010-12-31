@@ -1,5 +1,6 @@
 package br.com.ideia.util;
 
+import java.awt.Image;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,12 +17,12 @@ public class Utilitaria {
 	public static final String PATTERN_DDMMYYYY = "dd/MM/yyyy";
 	private static SimpleDateFormat format = new SimpleDateFormat();
 		
-	public ImageIcon getImagemLogo() {
-		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png"));
+	public Image getImagemLogo() {
+		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png")).getImage();
 	}
 	
 	public ImageIcon getImagemJava() {
-		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png"));
+		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logoJava.png"));
 	}
 	
 	public static Date convertStringToDate(String data, String pattern) throws ParseException {

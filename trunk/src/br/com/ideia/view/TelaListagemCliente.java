@@ -1,7 +1,6 @@
 package br.com.ideia.view;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -18,7 +17,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -36,7 +35,7 @@ import br.com.ideia.util.ValidacaoException;
  * Utilizada quando a pesquisa de cliente retorna mais de um resultado
  *
  */
-public class TelaListagemCliente extends JFrame {
+public class TelaListagemCliente extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable tabela;	
@@ -44,7 +43,8 @@ public class TelaListagemCliente extends JFrame {
 	private Map<Integer, ClienteVO> mapa;
 	private Logger logger;
 		
-	public TelaListagemCliente(List<ClienteVO> lista,final TelaCliente telaCliente){
+	public TelaListagemCliente(TelaMenu telaMenu, List<ClienteVO> lista,final TelaCliente telaCliente){
+		telaMenu.desktop.add(this);
 		logger = Logger.getLogger(getClass());
 		modelo = new ModeloRelatorio(new String[]{ "Nome", "Telefone", "Dt Nascim.", "Endereço", "Email"});
 		mapa = new HashMap<Integer, ClienteVO>();		
@@ -77,9 +77,8 @@ public class TelaListagemCliente extends JFrame {
 			}
 		};
 		tabela.getActionMap().put(im.get(enter), enterAction);
-
-		Container c = getContentPane();
-		c.setLayout(new FlowLayout());
+		
+		super.setLayout(new FlowLayout());
 		
 		JButton botaoVoltar = new JButton(Mensagem.LABEL_VOLTAR);
 					
@@ -90,13 +89,10 @@ public class TelaListagemCliente extends JFrame {
 		});
 
 		JScrollPane scrollPane = new JScrollPane(tabela);
-		c.add(scrollPane);
-		c.add(BorderLayout.SOUTH,botaoVoltar);			
+		super.add(scrollPane);
+		super.add(BorderLayout.SOUTH,botaoVoltar);			
 		setSize(650, 300);
-		setTitle("Clientes encontrados!");
-		setLocationRelativeTo(null);
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setTitle("Resultados encontrados!");	
 		setVisible(true);
 	}
 		

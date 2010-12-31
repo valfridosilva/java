@@ -1,7 +1,6 @@
 package br.com.ideia.view;
 
 import java.awt.BorderLayout;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -17,7 +16,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JButton;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
@@ -31,14 +30,15 @@ import br.com.ideia.util.ModeloRelatorio;
  * Utilizada quando a pesquisa retorna mais de um resultado
  *
  */
-public class TelaListagemProduto extends JFrame {
+public class TelaListagemProduto extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable tabela;	
 	private ModeloRelatorio modelo; 
 	private Map<Integer, ProdutoVO> mapa;
 			
-	public TelaListagemProduto(List<ProdutoVO> lista,final TelaProduto tela){		
+	public TelaListagemProduto(TelaMenu telaMenu, List<ProdutoVO> lista,final TelaProduto tela){		
+		telaMenu.desktop.add(this);
 		modelo = new ModeloRelatorio(new String[]{"Código","Descrição","Valor","Categoria","Fabricante"});
 		mapa = new HashMap<Integer, ProdutoVO>();		
 		int index = 0;
@@ -70,9 +70,8 @@ public class TelaListagemProduto extends JFrame {
 			}
 		};
 		tabela.getActionMap().put(im.get(enter), enterAction);
-		
-		Container c = getContentPane();
-		c.setLayout(new FlowLayout());
+				
+		setLayout(new FlowLayout());
 		
 		JButton botaoVoltar = new JButton(Mensagem.LABEL_VOLTAR);
 					
@@ -83,13 +82,10 @@ public class TelaListagemProduto extends JFrame {
 		});
 
 		JScrollPane scrollPane = new JScrollPane(tabela);
-		c.add(scrollPane);
-		c.add(BorderLayout.SOUTH,botaoVoltar);			
+		add(scrollPane);
+		add(BorderLayout.SOUTH,botaoVoltar);			
 		setSize(650, 300);
-		setTitle("Resultados encontrados!");
-		setLocationRelativeTo(null);
-		setResizable(false);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+		setTitle("Resultados encontrados!");		
 		setVisible(true);
 	}
 		

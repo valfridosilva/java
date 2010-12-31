@@ -1,14 +1,16 @@
 package br.com.ideia.view;
 
+import java.awt.FlowLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -25,12 +27,14 @@ import org.apache.log4j.Logger;
 import br.com.ideia.bean.CategoriaVO;
 import br.com.ideia.bean.FabricanteVO;
 import br.com.ideia.bean.ProdutoVO;
+import br.com.ideia.negocio.ProdutoBO;
+import br.com.ideia.util.BancoDeDadosException;
 import br.com.ideia.util.ModeloRelatorio;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class TelaPesquisaProduto extends JFrame {
+public class TelaPesquisaProduto extends JInternalFrame {
 	private static Logger logger = Logger.getLogger(TelaPesquisaProduto.class);
 	private static final long serialVersionUID = 1L;
 	private JTable tabela;
@@ -44,68 +48,86 @@ public class TelaPesquisaProduto extends JFrame {
 	private TelaProduto telaProduto;
 	private List<CategoriaVO> categorias;
 	private List<FabricanteVO> fabricantes;
+	private ProdutoBO produtoBO;
 
-	public TelaPesquisaProduto(List<ProdutoVO> produtos, List<CategoriaVO> categorias, List<FabricanteVO> fabricantes) {
-		setTitle("Pesquisa!");
+	public TelaPesquisaProduto(TelaMenu telaMenu, List<ProdutoVO> produtos, List<CategoriaVO> categorias, List<FabricanteVO> fabricantes) {
+		super("Pesquisa!", true, true, true, true);
+		setLayout(new FlowLayout());
+		setVisible(true);
 
+		telaMenu.desktop.add(this);
 		inputText = new JTextField(80);
-		inputText.setEditable(true);	
-		
+		inputText.setEditable(true);
+		inputText.addKeyListener(new KeyListener(){
+			@Override
+			public void keyPressed(KeyEvent evt) {}
+			@Override
+			public void keyReleased(KeyEvent evt) {}
+			@Override
+			public void keyTyped(KeyEvent evt) {
+				char key = evt.getKeyChar();
+				if(key == '\\'){
+					evt.consume();
+				}
+			}			
+		});
+
 		this.categorias = categorias;
 		this.fabricantes = fabricantes;
-				
-		mapa = new HashMap<Integer, ProdutoVO>();	
-		modelo = new ModeloRelatorio(new String[]{"Seq.","Código","Descrição","Valor","Categoria","Fabricante"});
-		
+
+		modelo = new ModeloRelatorio(new String[] { "Seq.", "Código", "Descrição", "Valor", "Categoria", "Fabricante" });
+
+		mapa = new HashMap<Integer, ProdutoVO>();
 		int index = 0;
 		for (ProdutoVO prod : produtos) {
-			modelo.add(transformaToArray(prod, index+1));
+			modelo.add(transformaToArray(prod, index + 1));
 			mapa.put(index, prod);
 			index++;
 		}
-	
+
 		tabela = new JTable(modelo);
 		tabela.setRowHeight(22); // tamanho da linha
 		/**
 		 * permite selecionar apenas uma linha
 		 */
-		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
+		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tabela.setColumnSelectionAllowed(false);
-		
+
 		/**
 		 * Tecla ENTER foca no próximo componente
 		 */
 		inputText.addKeyListener(new KeyListener() {
 			@Override
-			public void keyTyped(KeyEvent e) {}
+			public void keyTyped(KeyEvent e) {
+			}
+
 			@Override
-			public void keyReleased(KeyEvent e) {}
+			public void keyReleased(KeyEvent e) {
+			}
+
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_DOWN) {		
+				if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_DOWN) {
 					tabela.requestFocus();
 				}
 			}
 		});
-		
+
 		sorter = new TableRowSorter<ModeloRelatorio>(modelo);
 		tabela.setRowSorter(sorter);
-		
+
 		dimensionaColuna(tabela.getColumnModel());
 		/**
 		 * impede que o usuário mova as colunas
 		 */
-		tabela.getTableHeader().setReorderingAllowed(false);			
-		
+		tabela.getTableHeader().setReorderingAllowed(false);
+
 		scroll = new JScrollPane(tabela);
 
 		super.add(getpanelform());
 
 		super.pack();
 
-		setLocationRelativeTo(null);
-		setResizable(true);
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setVisible(true);
 
 		inputText.requestFocus();
@@ -113,7 +135,7 @@ public class TelaPesquisaProduto extends JFrame {
 
 	private JPanel getpanelform() {
 
-		FormLayout formlayout = new FormLayout("2dlu, 700px, 2dlu", "4dlu, pref , 4dlu, pref, 4dlu");
+		FormLayout formlayout = new FormLayout("2dlu, 730px, 2dlu", "4dlu, pref, 4dlu, pref, 4dlu");
 		JPanel jpanel = new JPanel(formlayout);
 		jpanel.setBorder(BorderFactory.createTitledBorder("Consulta "));
 		CellConstraints cellconstraints = new CellConstraints();
@@ -130,7 +152,6 @@ public class TelaPesquisaProduto extends JFrame {
 			public void removeUpdate(DocumentEvent e) {
 				aplicaFiltro(inputText.getText());
 			}
-
 		};
 		inputText.getDocument().addDocumentListener(myListener);
 
@@ -144,11 +165,28 @@ public class TelaPesquisaProduto extends JFrame {
 		try {
 			filtro = RowFilter.regexFilter("(?i)" + nome);
 		} catch (PatternSyntaxException e) {
-			logger.debug("Regex inválida",e);
+			logger.debug(e.getMessage());
 		}
 		sorter.setRowFilter(filtro);
 		if (sorter.getViewRowCount() > 0) {
 			tabela.addRowSelectionInterval(0, 0);
+		}
+	}
+
+	public TelaProduto getTelaProduto() {
+		if (telaProduto == null) {
+			telaProduto = new TelaProduto(null, categorias, fabricantes);
+		}
+		return telaProduto;
+	}
+
+	public void restaura() {
+		this.setVisible(true);
+		try {
+			this.setIcon(false);
+			this.setMaximum(false);
+		} catch (PropertyVetoException e) {
+			logger.error("erro ao restaurar a tela", e);
 		}
 	}
 
@@ -159,18 +197,23 @@ public class TelaPesquisaProduto extends JFrame {
 		linha[index++] = produto.getCodigo();
 		linha[index++] = produto.getDescricao();
 		linha[index++] = produto.getValor();
-		linha[index++] = produto.getCategoria()==null?"":produto.getCategoria().getDescricao();
-		linha[index++] = produto.getFabricante()==null?"":produto.getFabricante().getDescricao();
+		linha[index++] = produto.getCategoria() == null ? "" : produto.getCategoria().getDescricao();
+		linha[index++] = produto.getFabricante() == null ? "" : produto.getFabricante().getDescricao();
 		return linha;
 	}
-	
-	public TelaProduto getTelaProduto() {
-		if (telaProduto == null) {			
-			telaProduto = new TelaProduto(categorias,fabricantes);
-			telaProduto.setSize(600, 260);
-			telaProduto.setLocationRelativeTo(null);	
-		}		
-		return telaProduto;
+
+	public void atualiza() throws BancoDeDadosException {
+		List<ProdutoVO> produtos = getProdutoBO().getProdutoByNome("");
+		mapa.clear();
+		int index = 0;
+		modelo.clean();
+		for (ProdutoVO prod : produtos) {
+			modelo.add(transformaToArray(prod, index + 1));
+			mapa.put(index, prod);
+			index++;
+		}				
+		sorter = new TableRowSorter<ModeloRelatorio>(modelo);
+		tabela.setRowSorter(sorter);
 	}
 
 	public void dimensionaColuna(TableColumnModel modelo) {
@@ -179,9 +222,15 @@ public class TelaPesquisaProduto extends JFrame {
 		modelo.getColumn(index++).setPreferredWidth(50);
 		modelo.getColumn(index++).setPreferredWidth(300);
 		modelo.getColumn(index++).setPreferredWidth(50);
-		modelo.getColumn(index++).setPreferredWidth(60);
-		modelo.getColumn(index++).setPreferredWidth(60);
-	}	
+		modelo.getColumn(index++).setPreferredWidth(70);
+		modelo.getColumn(index++).setPreferredWidth(70);
+	}
+
+	public ProdutoBO getProdutoBO() {
+		if (produtoBO == null) {
+			produtoBO = new ProdutoBO();
+		}
+		return produtoBO;
+	}
+
 }
-
-

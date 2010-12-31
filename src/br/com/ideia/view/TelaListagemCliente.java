@@ -133,7 +133,7 @@ public class TelaListagemCliente extends JFrame {
 		try {
 			tela.setClienteToTela(mapa.get(linha));
 		} catch (ValidacaoException e1) {
-			logger.debug(Mensagem.DATA_INVALIDA,e1);
+			logger.debug(e1.getMessage(),e1);
 		}
 		tela.habilitaBotoes(false);
 		voltar();

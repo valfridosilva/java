@@ -3,6 +3,7 @@ package br.com.ideia.view;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyVetoException;
 import java.text.ParseException;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import javax.persistence.EntityExistsException;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,7 +35,7 @@ import com.jgoodies.forms.layout.FormLayout;
  * Tela de manter usuário
  * 
  */
-public class TelaCliente extends JFrame {
+public class TelaCliente extends JInternalFrame {
 
 	private static Logger logger = Logger.getLogger(TelaCliente.class);
 
@@ -61,15 +62,13 @@ public class TelaCliente extends JFrame {
 	private ClienteBO clienteBO;
 	private static final String TIPO_OBJETO = "Cliente";
 
-	public TelaCliente() {
-		super(TIPO_OBJETO);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		setLayout(new FlowLayout());
-		setLocationRelativeTo(null);
-		setResizable(false);
+	public TelaCliente(TelaMenu telaMenu) {
+		super(TIPO_OBJETO, true, true, true, true);
 		setVisible(true);
+		setLayout(new FlowLayout());
 		boolean flag = true;
 
+		telaMenu.desktop.add(this);
 		try {
 			formatData = new MaskFormatter("##/##/####");
 			formatTelefone = new MaskFormatter("(##)####-####");
@@ -84,16 +83,24 @@ public class TelaCliente extends JFrame {
 		botaoLimpar = new MyJButton(Mensagem.LABEL_LIMPAR);
 
 		labelNome = new JLabel("* Nome:");
+		labelNome.setToolTipText("Nome");
 		labelDataNascimento = new JLabel("Data Nascimento:");
+		labelDataNascimento.setToolTipText("Data Nascimento");
 		labelEndereco = new JLabel(" Endereço:");
+		labelEndereco.setToolTipText("Endereço");
 		labelTelefone = new JLabel("* Telefone:");
+		labelTelefone.setToolTipText("Telefone");
+		labelTelefone.setToolTipText("Telefone");
 		labelEmail = new JLabel(" E-mail:");
-		
+		labelEmail.setToolTipText("Email");
+
 		campoNome = new JTextField(100);
 		campoEndereco = new JTextField(100);
 		campoDataNascimento = new JFormattedTextField(formatData);
+		campoDataNascimento.setFocusLostBehavior(JFormattedTextField.COMMIT);
 		campoEmail = new JTextField(50);
 		campoTelefone = new JFormattedTextField(formatTelefone);
+		campoTelefone.setFocusLostBehavior(JFormattedTextField.COMMIT);
 
 		campoNome.setEditable(flag);
 		campoEndereco.setEditable(flag);
@@ -107,17 +114,25 @@ public class TelaCliente extends JFrame {
 
 		super.add(painel);
 
-		getContentPane().add(botaoSalvar);
-		getContentPane().add(botaoAlterar);
-		getContentPane().add(botaoExcluir);
-		getContentPane().add(botaoLimpar);
+		JPanel painelBotao = new JPanel();
+
+		painelBotao.add(botaoSalvar);
+		painelBotao.add(botaoAlterar);
+		painelBotao.add(botaoExcluir);
+		painelBotao.add(botaoLimpar);
+
+		super.add(painelBotao);
+
+		campoNome.requestFocus();
+
 		super.pack();
 
 	}
 
 	public JPanel getpanelform() {
 
-		FormLayout formlayout = new FormLayout("2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 90px, 2dlu, pref, 2dlu, 70px, 2dlu",
+		FormLayout formlayout = new FormLayout(
+				"2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 90px, 2dlu, pref, 2dlu, 70px, 2dlu, 50px, 2dlu, 50px, 2dlu, 60px, 2dlu",
 				"2dlu, top:pref, 2dlu, top:pref, 2dlu, top:pref, 2dlu, pref, 2dlu, pref, 8dlu, pref, 8dlu");
 		JPanel jpanel = new JPanel(formlayout);
 		jpanel.setBorder(BorderFactory.createTitledBorder("Dados "));
@@ -149,8 +164,8 @@ public class TelaCliente extends JFrame {
 			}
 		});
 		jpanel.add(labelNome, cellconstraints.xy(2, 2));
-		jpanel.add(campoNome, cellconstraints.xyw(4, 2, 5));
-		jpanel.add(botaoPesquisar, cellconstraints.xy(10, 2));
+		jpanel.add(campoNome, cellconstraints.xyw(4, 2, 9));
+		jpanel.add(botaoPesquisar, cellconstraints.xyw(14, 2, 3));
 
 		jpanel.add(labelTelefone, cellconstraints.xy(2, 4));
 		jpanel.add(campoTelefone, cellconstraints.xy(4, 4));
@@ -158,9 +173,9 @@ public class TelaCliente extends JFrame {
 		jpanel.add(campoDataNascimento, cellconstraints.xy(8, 4));
 
 		jpanel.add(labelEndereco, cellconstraints.xy(2, 6));
-		jpanel.add(campoEndereco, cellconstraints.xyw(4, 6, 5));
+		jpanel.add(campoEndereco, cellconstraints.xyw(4, 6, 9));
 		jpanel.add(labelEmail, cellconstraints.xy(2, 8));
-		jpanel.add(campoEmail, cellconstraints.xyw(4, 8, 5));
+		jpanel.add(campoEmail, cellconstraints.xyw(4, 8, 9));
 
 		return jpanel;
 	}
@@ -199,6 +214,16 @@ public class TelaCliente extends JFrame {
 		botaoExcluir.setVisible(!flag);
 	}
 
+	public void restaura() {
+		this.setVisible(true);
+		try {
+			this.setIcon(false);
+			this.setMaximum(false);
+		} catch (PropertyVetoException e) {
+			logger.error("erro ao restaurar a tela", e);
+		}
+	}
+
 	/**
 	 * Recupera os campos da tela e seta no objeto cliente
 	 * 
@@ -214,15 +239,19 @@ public class TelaCliente extends JFrame {
 		}
 		cli.setNome(campoNome.getText());
 
-		if (campoDataNascimento.getText().trim().length() == 10) {
+		if (campoDataNascimento.getText().equals(campoDataNascimento.getValue())) {
 			try {
 				cli.setDataNascimento(Utilitaria.convertStringToDate(campoDataNascimento.getText(), Utilitaria.PATTERN_DDMMYYYY));
 			} catch (ParseException e) {
 				campoDataNascimento.requestFocus();
-				throw new ValidacaoException(String.format(Mensagem.DATA_INVALIDA, campoDataNascimento.getText()));
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimento.getText(),labelDataNascimento.getToolTipText()));
 			}
 		} else {
-			cli.setDataNascimento(null);
+			if (campoDataNascimento.getText().trim().equals("/  /")) {
+				cli.setDataNascimento(null);
+			} else {
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimento.getText(), labelDataNascimento.getToolTipText()));
+			}
 		}
 		if (!campoEmail.getText().isEmpty()) {
 			cli.setEmail(campoEmail.getText());
@@ -231,7 +260,15 @@ public class TelaCliente extends JFrame {
 			cli.setEndereco(campoEndereco.getText());
 		}
 
-		cli.setTelefone(campoTelefone.getText());
+		if(campoTelefone.getText().equals(campoTelefone.getValue())){
+			cli.setTelefone(campoTelefone.getText());
+		} else {
+			if (campoTelefone.getText().trim().equals("(  )    -")) {
+				cli.setTelefone(null);
+			} else {
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoTelefone.getText(), labelTelefone.getToolTipText()));
+			}
+		}
 		return cli;
 	}
 
@@ -244,13 +281,13 @@ public class TelaCliente extends JFrame {
 	 */
 	public void setClienteToTela(ClienteVO cli) throws ValidacaoException {
 		campoNome.setText(cli.getNome());
-		campoTelefone.setText(cli.getTelefone());
+		campoTelefone.setValue(cli.getTelefone());
 		campoEmail.setText(cli.getEmail());
 		campoEndereco.setText(cli.getEndereco());
 		try {
-			campoDataNascimento.setText(Utilitaria.convertDateToString(cli.getDataNascimento(), Utilitaria.PATTERN_DDMMYYYY));
+			campoDataNascimento.setValue(Utilitaria.convertDateToString(cli.getDataNascimento(), Utilitaria.PATTERN_DDMMYYYY));
 		} catch (ParseException e) {
-			throw new ValidacaoException(String.format(Mensagem.DATA_INVALIDA, campoDataNascimento.getText()));
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimento.getText(), labelDataNascimento.getToolTipText()));
 		}
 		cliente = cli;
 	}
@@ -266,6 +303,7 @@ public class TelaCliente extends JFrame {
 				JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);
 			}
+
 		} catch (BancoDeDadosException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
 			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
@@ -278,10 +316,12 @@ public class TelaCliente extends JFrame {
 
 	private void salvar() {
 		try {
-			validaCliente();
-			getClienteBO().insereCliente(getClienteFomTela());
+			ClienteVO cliente = getClienteFomTela();
+			validaCliente(cliente);
+			getClienteBO().insereCliente(cliente);
 			limpar();
-			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+					JOptionPane.INFORMATION_MESSAGE);
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (EntityExistsException e) {
@@ -295,24 +335,25 @@ public class TelaCliente extends JFrame {
 		}
 	}
 
-	private void validaCliente() throws ValidacaoException {
-
-		if (campoNome.getText().trim().isEmpty()) {
+	private void validaCliente(ClienteVO cliente) throws ValidacaoException {
+		if (cliente.getNome().isEmpty()) {
 			campoNome.requestFocus();
-			throw new ValidacaoException(Mensagem.CAMPO_OBRIGATORIO);
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelNome.getToolTipText()));
 		}
-		if (campoTelefone.getText().trim().length() != 13) {
+		if (cliente.getTelefone() == null) {
 			campoTelefone.requestFocus();
-			throw new ValidacaoException(Mensagem.CAMPO_OBRIGATORIO);
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelTelefone.getToolTipText()));
 		}
 	}
 
 	private void alterar() {
 		try {
-			validaCliente();
+			ClienteVO cliente = getClienteFomTela();
+			validaCliente(cliente);
 			getClienteBO().alteraCliente(getClienteFomTela());
 			limpar();
-			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO,
+					JOptionPane.INFORMATION_MESSAGE);
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (EntityExistsException e) {
@@ -336,7 +377,7 @@ public class TelaCliente extends JFrame {
 		campoNome.requestFocus();
 		cliente = null;
 	}
-	
+
 	public ClienteBO getClienteBO() {
 		if (clienteBO == null) {
 			clienteBO = new ClienteBO();

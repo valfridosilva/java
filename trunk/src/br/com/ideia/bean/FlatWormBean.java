@@ -9,5 +9,7 @@ import java.io.Serializable;
  * @author valfrido.silva
  */
 public interface FlatWormBean extends Serializable{
+	
+	
 
 }

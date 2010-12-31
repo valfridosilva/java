@@ -2,8 +2,15 @@
 <file-format>  
 	<converter name="char" class="br.com.ideia.importacao.FlatWormConverter" method="convertChar" return-type="java.lang.String"/>
 	<converter name="date" class="br.com.ideia.importacao.FlatWormConverter" method="convertDate" return-type="java.util.Date"/>
-	<record name="header">       
-        <record-definition>
+	<converter name="decimal" class="br.com.ideia.importacao.FlatWormConverter" method="convertDecimal" return-type="java.lang.Double" />
+	<converter name="long" class="br.com.ideia.importacao.FlatWormConverter" method="convertLong" return-type="java.lang.Long" />
+	<record name="cliente"> 
+		<record-ident>
+			<field-ident field-start="0" field-length="1">
+				<match-string>C</match-string>
+			</field-ident>
+		</record-ident>     
+        <record-definition>        	
         	<bean name="cliente" class="br.com.ideia.bean.ClienteVO"/>
             <line delimit="|">
                 <record-element length="0" type="char" beanref="cliente.nome" >
@@ -26,6 +33,44 @@
                   	<conversion-option name="default-value" value=""/>
                 </record-element>
                 <record-element length="0" type="char" beanref="cliente.email" >
+                   	<conversion-option name="justify" value="left"/>  
+                  	<conversion-option name="pad-character" value=""/>
+                  	<conversion-option name="default-value" value=""/>
+                </record-element>
+            </line>
+        </record-definition>
+    </record>
+    <record name="produto"> 
+		<record-ident>
+			<field-ident field-start="0" field-length="1">
+				<match-string>P</match-string>
+			</field-ident>
+		</record-ident>     
+        <record-definition>        	
+        	<bean name="produto" class="br.com.ideia.bean.ProdutoVO"/>
+            <line delimit="|">
+                <record-element length="0" type="long" beanref="produto.codigo" >
+                    <conversion-option name="justify" value="left"/>  
+                  	<conversion-option name="pad-character" value=""/>
+                  	<conversion-option name="default-value" value=""/>
+                </record-element>
+                 <record-element length="0" type="char" beanref="produto.descricao" >
+                   	<conversion-option name="justify" value="left"/>  
+                  	<conversion-option name="pad-character" value=""/>
+                  	<conversion-option name="default-value" value=""/>
+                </record-element>
+                <record-element length="0" type="decimal" beanref="produto.valor" >
+					<conversion-option name="decimal-implied" value="true" />
+					<conversion-option name="decimal-places" value="2" />
+					<conversion-option name="justify" value="right" />
+					<conversion-option name="pad-character" value="0" />
+				</record-element>
+                <record-element length="0" type="char" beanref="produto.categoria" >
+                   	<conversion-option name="justify" value="left"/>  
+                  	<conversion-option name="pad-character" value=""/>
+                  	<conversion-option name="default-value" value=""/>
+                </record-element>
+                <record-element length="0" type="char" beanref="produto.fabricante" >
                    	<conversion-option name="justify" value="left"/>  
                   	<conversion-option name="pad-character" value=""/>
                   	<conversion-option name="default-value" value=""/>

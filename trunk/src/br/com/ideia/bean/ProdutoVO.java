@@ -10,11 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import br.com.ideia.importacao.FlatWorm;
-
 @Entity(name = "produto")
 @Table(name = "TB_PRODUTO")
-@FlatWorm(beanName = "produto", recordName = "header")
 public class ProdutoVO implements FlatWormBean {
 
 	private static final long serialVersionUID = 1L;

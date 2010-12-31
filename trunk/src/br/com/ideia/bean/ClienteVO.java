@@ -10,11 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import br.com.ideia.importacao.FlatWorm;
-
 @Entity(name="cliente")
 @Table(name="TB_CLIENTE")
-@FlatWorm(beanName="cliente",recordName="header")
 public class ClienteVO implements FlatWormBean{
 
 	private static final long serialVersionUID = -552968616849600301L;

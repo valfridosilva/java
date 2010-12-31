@@ -129,7 +129,7 @@ public class TelaMenu extends JFrame {
 				restaurarBackup();
 			}
 		});
-		sistema.add(restaurarBackup);
+	//	sistema.add(restaurarBackup);
 		sistema.addSeparator();
 
 		JMenuItem sobre = new JMenuItem("Sobre");

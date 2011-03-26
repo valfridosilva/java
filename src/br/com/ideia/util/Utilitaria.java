@@ -1,6 +1,7 @@
 package br.com.ideia.util;
 
 import java.awt.Image;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,7 +16,9 @@ public class Utilitaria {
 
 	private static final String caminhoImagem = "imagens/";
 	public static final String PATTERN_DDMMYYYY = "dd/MM/yyyy";
-	private static SimpleDateFormat format = new SimpleDateFormat();
+	public static final String PATTERN_VALOR = "#,###,##0.00";
+	private static SimpleDateFormat sdf = new SimpleDateFormat();
+	private static DecimalFormat df = new DecimalFormat();
 		
 	public Image getImagemLogo() {
 		return new ImageIcon(getClass().getClassLoader().getResource(caminhoImagem + "logo.png")).getImage();
@@ -29,18 +32,30 @@ public class Utilitaria {
 		if(data == null || data.isEmpty()){
 			return null;
 		}
-		format.applyPattern(pattern);
-		format.setLenient(false);
-		return format.parse(data);
+		sdf.applyPattern(pattern);
+		sdf.setLenient(false);
+		return sdf.parse(data);
 	}	
 	
 	public static String convertDateToString(Date data, String pattern) throws ParseException {
 		if(data == null){
 			return "";
 		}
-		format.applyPattern(pattern); 
-		format.setLenient(false);
-		return format.format(data);
+		sdf.applyPattern(pattern); 
+		sdf.setLenient(false);
+		return sdf.format(data);
+	}
+	
+	public static String formataValor(Double valor) {
+		if(valor == null){
+			return "";
+		}		
+		try {
+			df.applyPattern(PATTERN_VALOR);			
+			return df.format(valor);
+		} catch (Exception e) {
+			return valor+"";
+		}		
 	}
 	
 }

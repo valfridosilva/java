@@ -17,8 +17,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableRowSorter;
 
@@ -51,6 +53,8 @@ public class TelaPesquisaProduto extends JInternalFrame {
 	private List<FabricanteVO> fabricantes;
 	private ProdutoBO produtoBO;
 	private String[] caracteresEspeciais = new String[]{"\\","(",")","[","^","$",".","|","?","*","+"};
+	private DefaultTableCellRenderer direita = new DefaultTableCellRenderer(); 
+	private DefaultTableCellRenderer centralizado = new DefaultTableCellRenderer();
 
 	public TelaPesquisaProduto(TelaMenu telaMenu, List<ProdutoVO> produtos, List<CategoriaVO> categorias, List<FabricanteVO> fabricantes) {
 		super("Pesquisa!", true, true, true, true);
@@ -81,6 +85,8 @@ public class TelaPesquisaProduto extends JInternalFrame {
 		 */
 		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		tabela.setColumnSelectionAllowed(false);
+		direita.setHorizontalAlignment(SwingConstants.RIGHT); 
+		centralizado.setHorizontalAlignment(SwingConstants.CENTER);  
 
 		/**
 		 * Tecla ENTER foca no próximo componente
@@ -209,8 +215,11 @@ public class TelaPesquisaProduto extends JInternalFrame {
 		modelo.getColumn(index++).setPreferredWidth(4);
 		modelo.getColumn(index++).setPreferredWidth(50);
 		modelo.getColumn(index++).setPreferredWidth(300);
+		modelo.getColumn(index).setCellRenderer(direita); 
 		modelo.getColumn(index++).setPreferredWidth(50);
+		modelo.getColumn(index).setCellRenderer(centralizado); 
 		modelo.getColumn(index++).setPreferredWidth(70);
+		modelo.getColumn(index).setCellRenderer(centralizado); 
 		modelo.getColumn(index++).setPreferredWidth(70);
 	}
 

@@ -26,6 +26,7 @@ import javax.swing.table.TableColumnModel;
 import br.com.ideia.bean.ProdutoVO;
 import br.com.ideia.util.Mensagem;
 import br.com.ideia.util.ModeloRelatorio;
+import br.com.ideia.util.Utilitaria;
 /**
  * Utilizada quando a pesquisa retorna mais de um resultado
  *
@@ -94,7 +95,7 @@ public class TelaListagemProduto extends JInternalFrame {
 		int index = 0;		
 		linha[index++] = produto.getCodigo();
 		linha[index++] = produto.getDescricao();
-		linha[index++] = produto.getValor();
+		linha[index++] = Utilitaria.formataValor(produto.getValor());	
 		linha[index++] = produto.getCategoria()!=null?produto.getCategoria().getDescricao():"";
 		linha[index++] = produto.getFabricante()!=null?produto.getFabricante().getDescricao():"";
 		return linha;

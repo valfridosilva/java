@@ -30,6 +30,7 @@ import br.com.ideia.bean.ProdutoVO;
 import br.com.ideia.negocio.ProdutoBO;
 import br.com.ideia.util.BancoDeDadosException;
 import br.com.ideia.util.ModeloRelatorio;
+import br.com.ideia.util.Utilitaria;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -182,8 +183,8 @@ public class TelaPesquisaProduto extends JInternalFrame {
 		int index = 0;
 		linha[index++] = seq;
 		linha[index++] = produto.getCodigo();
-		linha[index++] = produto.getDescricao();
-		linha[index++] = produto.getValor();
+		linha[index++] = produto.getDescricao();		
+		linha[index++] = Utilitaria.formataValor(produto.getValor());		
 		linha[index++] = produto.getCategoria() == null ? "" : produto.getCategoria().getDescricao();
 		linha[index++] = produto.getFabricante() == null ? "" : produto.getFabricante().getDescricao();
 		return linha;
